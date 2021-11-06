@@ -108,7 +108,6 @@ int Compilation(Text *input_text, BinaryCode *cpu_code, Labels *labels, int asse
             
             for (int i = 0; i < labels->labels_number; ++i)                                                                                     //checking if label was already defined during first assemblering
             {
-                printf("label_decl: %s\n", labels->labels_array[i].name);
                 if (strcmp(command_name, labels->labels_array[i].name) == 0)
                 {
                     if (!assembly_labels)
@@ -176,6 +175,11 @@ int Compilation(Text *input_text, BinaryCode *cpu_code, Labels *labels, int asse
         }
     }
 
+    /*for (int i = 0; i < labels->labels_number; ++i)
+    {
+        printf("label name: %s\n", labels->labels_array[i].name);
+        printf("label byte_number: %d\n", labels->labels_array[i].byte_number);
+    }*/
     return OK;
 }
 
@@ -222,7 +226,7 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
         cpu_code->code[command_info_byte] |= RAM_MASK;
         using_RAM = true;
     } 
-
+    printf("shift: %u\n", shift);
     // checking label
 
     bool if_arg_read = false;
@@ -238,11 +242,6 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
             {   
                 if (strcmp(labels->labels_array[i].name, arg_str) == 0)
                 {
-                    /*printf("arg_str: %s\n", arg_str);
-                    for(int j = 0; j < labels->labels_number; ++j)
-                    {
-                        printf("label: %s\n", labels->labels_array[j].name);
-                    }*/
                     if_arg_read = true;
                     ++args_quantity;
                     shift += arg_length;
@@ -250,10 +249,11 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
                    *((int *) (cpu_code->code + cpu_code->current_byte)) = labels->labels_array[i].byte_number;
                     cpu_code->current_byte += sizeof(int);
                 }
-                else
-                {
-                    return UNKNOWN_LABEL;
-                }
+            }
+
+            if (!if_arg_read)
+            {
+                return UNKNOWN_LABEL;
             }
         }
         else
@@ -300,7 +300,7 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
             shift += sizeof(unsigned char);    
         }
     }
-
+    printf("shift: %u\n", shift);
     if (args_quantity == max_args_num)
     {
         if ((*(line->str + shift) != '\0') && (*(line->str + shift) != ']'))
@@ -315,7 +315,7 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
 
         return args_quantity;
     }
-
+    
     // plus check
 
     bool if_plus = false;
@@ -325,15 +325,14 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
         if_plus = true;
         ++shift;
     }
-
+    
     // checking arg after plus
 
     if_arg_read = false;
-
     arg_length = 0;
     
-    if (sscanf(line->str + shift, "%[0-9]%n", arg_str, &arg_length) > 0)
-    {
+    if (sscanf(line->str + shift, "%[0-9]", arg_str) > 0)
+    {   
         if (!if_plus)
         {
             return WRONG_SYNTAX;
@@ -343,8 +342,8 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
         ++args_quantity;
 
         cpu_code->code[command_info_byte] |= IMM_CONST_MASK;
-        shift += arg_length;
-
+        shift += sizeof(int);
+    
         *((int *) (cpu_code->code + cpu_code->current_byte)) = atoi(arg_str);
         cpu_code->current_byte += sizeof(int);
     }
