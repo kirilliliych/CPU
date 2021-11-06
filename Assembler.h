@@ -16,7 +16,7 @@ const int MAX_COMMAND_NAME_LENGTH = 20;
 const int MAX_ARG_SIZE = 10;
 const int MAX_LABELS_NUMBER = 100;
 const int J_FIRST = 10;
-const int J_LAST  = 16;
+const int J_LAST  = 17;
 const int MAX_PROGRAMME_LENGTH = 10000;
 const int VERS_AND_SIGN_LENGTH = 26;
 

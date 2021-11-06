@@ -70,7 +70,7 @@ DEF_CMD(call, 17, 1, 1,
 
 )
 
-DEF_CMD(ret, 18, 1, 1,
+DEF_CMD(ret, 18, 0, 0,
 
 )
 

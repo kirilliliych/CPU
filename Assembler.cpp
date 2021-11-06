@@ -1,7 +1,5 @@
 #include "Assembler.h"
 
-#define test printf("%d\n", __LINE__);
-
 int main(int argc, const char *argv[])
 {
     if (argc > 3)
@@ -26,9 +24,9 @@ int main(int argc, const char *argv[])
     
     for (int i = 0; i < REASSEMBLING_NUMBER; ++i)
     {
-        printf("%d iteration: \n", i + 1);
+        printf("%d iteration:\n", i + 1);
         int res = Compilation(&input_text, &cpu_code, &labels, i);
-        printf("res = %d\n", res);
+    
         if (res < 0)
         {
             printf("Compilation troubles, exiting");
@@ -82,7 +80,7 @@ int Compilation(Text *input_text, BinaryCode *cpu_code, Labels *labels, int asse
         }
         
         // deleting spaces
-                                                                                                                    // сделать пропуск пустых строк?
+
         char *space_ptr = input_text->lines[line_index].str + input_text->lines[line_index].len - 1;
         while (*space_ptr == ' ')
         {
@@ -91,6 +89,11 @@ int Compilation(Text *input_text, BinaryCode *cpu_code, Labels *labels, int asse
         *(space_ptr + 1) = '\0';
         input_text->lines[line_index].len = space_ptr - input_text->lines[line_index].str + 1;
         
+        if (*(input_text->lines[line_index].str) == '\0')
+        {
+            continue;
+        }
+
         // command_parsing
 
         char command_name[MAX_COMMAND_NAME_LENGTH] = "";
@@ -226,7 +229,7 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
         cpu_code->code[command_info_byte] |= RAM_MASK;
         using_RAM = true;
     } 
-    printf("shift: %u\n", shift);
+    
     // checking label
 
     bool if_arg_read = false;
@@ -271,9 +274,10 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
 
     // if number
     
+    int read_number = 0;
     if (!if_arg_read)
     {
-        if (sscanf(line->str + shift, "%[0-9]", arg_str) > 0)            // ты дурак? ты число считываешь лул
+        if (sscanf(line->str + shift, "%d", &read_number) > 0)            
         {
             if_arg_read = true;
             ++args_quantity;
@@ -281,7 +285,7 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
             cpu_code->code[command_info_byte] |= IMM_CONST_MASK;
             shift += sizeof(int);
 
-            *((int *) (cpu_code->code + cpu_code->current_byte)) = atoi(arg_str);
+            *((int *) (cpu_code->code + cpu_code->current_byte)) = read_number;
             cpu_code->current_byte += sizeof(int);
         }
     }
@@ -297,10 +301,10 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
 
             cpu_code->code[command_info_byte] |= REG_MASK;
             cpu_code->code[cpu_code->current_byte++] = (unsigned char) (arg_str[0] - 'a');
-            shift += sizeof(unsigned char);    
+            shift += sizeof(unsigned char) + 1;    
         }
     }
-    printf("shift: %u\n", shift);
+    
     if (args_quantity == max_args_num)
     {
         if ((*(line->str + shift) != '\0') && (*(line->str + shift) != ']'))
@@ -331,7 +335,7 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
     if_arg_read = false;
     arg_length = 0;
     
-    if (sscanf(line->str + shift, "%[0-9]", arg_str) > 0)
+    if (sscanf(line->str + shift, "%d", &read_number) > 0)
     {   
         if (!if_plus)
         {
@@ -344,7 +348,7 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
         cpu_code->code[command_info_byte] |= IMM_CONST_MASK;
         shift += sizeof(int);
     
-        *((int *) (cpu_code->code + cpu_code->current_byte)) = atoi(arg_str);
+        *((int *) (cpu_code->code + cpu_code->current_byte)) = read_number;
         cpu_code->current_byte += sizeof(int);
     }
     
