@@ -1,0 +1,10 @@
+push 1
+push 1
+factorial:
+pop
+jae factorial
+pop ax
+jmp next
+push 3
+next:
+hlt
