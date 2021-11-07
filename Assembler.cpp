@@ -26,16 +26,18 @@ int main(int argc, const char *argv[])
     {
         printf("%d iteration:\n", i + 1);
         int res = Compilation(&input_text, &cpu_code, &labels, i);
-    
-        if (res < 0)
+
+        fprintf(stderr, "Iteration finished with code: %d\n", res);
+        if (res != 0)
         {
-            printf("Compilation troubles, exiting");
             abort();
         }
     }
     
     FreeMemory(&input_text);
+
     OutputToBinary(&cpu_code, argv[2]);
+    BinaryCodeDtor(&cpu_code);
     return OK;
 }
 
@@ -53,7 +55,7 @@ void BinaryCodeDtor(BinaryCode *cpu_code)
     assert(cpu_code->code != nullptr);
 
     free(cpu_code->code);
-    cpu_code = nullptr;
+    cpu_code->code = nullptr;
     cpu_code->current_byte = 0;
 }
 
@@ -62,7 +64,8 @@ void LabelsCtor(Labels *labels)
     labels->labels_number = 0;
 }
 
-int Compilation(Text *input_text, BinaryCode *cpu_code, Labels *labels, int assembly_labels)
+
+int Compilation(Text *input_text, BinaryCode *cpu_code, Labels *labels, int num_pass)
 {
     assert(input_text != nullptr);
     assert(cpu_code   != nullptr);
@@ -72,6 +75,8 @@ int Compilation(Text *input_text, BinaryCode *cpu_code, Labels *labels, int asse
 
     for (size_t line_index = 0; line_index < input_text->lines_number; ++line_index)
     {
+        fprintf(stderr, "Line:%x\n", line_index);
+
         char *com_symb = strchr(input_text->lines[line_index].str, COMMENT_SYMBOL);
         if (com_symb != nullptr)
         {
@@ -101,19 +106,17 @@ int Compilation(Text *input_text, BinaryCode *cpu_code, Labels *labels, int asse
         
         // if meets name of label
 
-        bool if_label = false;
         bool label_found = false;
 
         if (command_name[strlen(command_name) - 1] == ':')
         {
-            if_label = true;
             command_name[strlen(command_name) - 1] = '\0';
             
             for (int i = 0; i < labels->labels_number; ++i)                                                                                     //checking if label was already defined during first assemblering
             {
                 if (strcmp(command_name, labels->labels_array[i].name) == 0)
                 {
-                    if (!assembly_labels)
+                    if (!num_pass)
                     {
                         return LABEL_ALREADY_DEFINED;
                     }
@@ -124,58 +127,57 @@ int Compilation(Text *input_text, BinaryCode *cpu_code, Labels *labels, int asse
                 }
             }   
 
-            if ((!label_found) && (assembly_labels))
+            if ((!label_found) && (num_pass))
             {
                 return UNKNOWN_LABEL;
             }
 
-            if (!assembly_labels)
+            if (num_pass == 0)
             {
                 strcpy(labels->labels_array[labels->labels_number].name, command_name);
-                labels->labels_array[labels->labels_number].byte_number = cpu_code->current_byte + VERS_AND_SIGN_LENGTH;                                                                         
+                labels->labels_array[labels->labels_number].byte_number = cpu_code->current_byte + VERSION_LENGTH + SIGNATURE_LENGTH;                                                                         
                 ++labels->labels_number;
             }
+
+            continue;
         }
-         
-        if (!if_label)
-        {
-            //def_cmd
+        
+        //def_cmd
+        fprintf(stderr, "Com name:\"%s\"\n", command_name);
+        bool command_recognized = false;
 
-            bool command_recognized = false;
-    
-            #define DEF_CMD(name, number, min_args_num, max_args_num, ...)                                                                                                                                                                                                                                                            \
-                if (!strcmp(#name, command_name))                                                                                                                           \
-                {                                                                                                                                                           \
-                    command_recognized = true;                                                                                                                              \
-                    cpu_code->code[cpu_code->current_byte++] = (unsigned char) number;                                                                                      \
-                                                                                                                                                                            \
-                    if (max_args_num > 0)                                                                                                                                   \
-                    {                                                                                                                                                       \
-                        int real_args_number = GetArguments(cpu_code, &input_text->lines[line_index], strlen(command_name) + 1, max_args_num, labels, assembly_labels);     \
-                        if (real_args_number < 0)                                                                                                                           \
-                        {                                                                                                                                                   \
-                            printf("Error in line %u: %d\n", line_index, real_args_number);                                                                                 \
-                        }                                                                                                                                                   \
-                                                                                                                                                                            \
-                        if ((real_args_number < min_args_num) || (real_args_number > max_args_num))                                                                         \
-                        {                                                                                                                                                   \
-                            printf("Too many or too few arguments for command in line %u\n", line_index + 1);                                                               \
-                            return INVALID_ARGS_NUMBER;                                                                                                                     \
-                        }                                                                                                                                                   \
-                    }                                                                                                                                                       \
-                }                                                                                                                                                           \
-                else                                                                                                                                                        
+        #define DEF_CMD(name, number, min_args_num, max_args_num, ...)                                                                                                                                                                                                                                                            \
+            if (!strcmp(#name, command_name))                                                                                                                           \
+            {                                                                                                                                                           \
+                command_recognized = true;                                                                                                                              \
+                cpu_code->code[cpu_code->current_byte++] = (unsigned char) number;                                                                                      \
+                                                                                                                                                                        \
+                if (max_args_num > 0)                                                                                                                                   \
+                {                                                                                                                                                       \
+                    int real_args_number = GetArguments(cpu_code, &input_text->lines[line_index], strlen(command_name) + 1, max_args_num, labels, num_pass);            \
+                    if (real_args_number < 0)                                                                                                                           \
+                    {                                                                                                                                                   \
+                        printf("Error in line %u: %d\n", line_index, real_args_number);                                                                                 \
+                    }                                                                                                                                                   \
+                                                                                                                                                                        \
+                    if ((real_args_number < min_args_num) || (real_args_number > max_args_num))                                                                         \
+                    {                                                                                                                                                   \
+                        printf("Too many or too few arguments for command in line %u\n", line_index + 1);                                                               \
+                        return INVALID_ARGS_NUMBER;                                                                                                                     \
+                    }                                                                                                                                                   \
+                }                                                                                                                                                       \
+            }                                                                                                                                                           \
+            else                                                                                                                                                        
 
-                #include "commands.h"
+            #include "commands.h"
 
-                /*else*/ if (!command_recognized)
-                {
-                    printf("Unknown command in line %u\n", line_index + 1);
-                    return INVALID_COMMAND_NAME;
-                }
+            /*else*/ if (!command_recognized)
+            {
+                printf("Unknown command in line %u\n", line_index + 1);
+                return INVALID_COMMAND_NAME;
+            }
 
-            #undef DEF_CMD
-        }
+        #undef DEF_CMD
     }
 
     /*for (int i = 0; i < labels->labels_number; ++i)
@@ -197,38 +199,23 @@ void OutputToBinary(BinaryCode *cpu_code, const char *output_file)
 
     Header binary_header = {};
 
-    fwrite(binary_header.version, sizeof(binary_header.version), 1, output_ptr);            //todo проверить fwrite
-    fwrite(binary_header.signature, sizeof(binary_header.signature), 1, output_ptr);
+    fwrite(&binary_header, sizeof(binary_header), 1, output_ptr);            
     fwrite(cpu_code->code, sizeof(char), cpu_code->current_byte, output_ptr);
 
     fclose(output_ptr);
 }
 
-int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_num, Labels *labels, int assembly_labels)
+int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_num, Labels *labels, int num_pass)
 {
     assert(cpu_code != nullptr);
     assert(cpu_code->code != nullptr);
     assert(line != nullptr);
+    assert(labels != nullptr);
+
+    assert(cpu_code->current_byte != 0);
 
     size_t command_info_byte = cpu_code->current_byte - 1;
-    int args_quantity = 0;
-    bool using_RAM = false;
-    
-    // checking RAM
-
-    if (*(line->str + shift) == '[')
-    {
-        ++shift;                                    
-        char *back_bracket_ptr = strchr(line->str, ']');
-
-        if (back_bracket_ptr != line->str + line->len - 1) // fix вместо strlen
-        {
-            return WRONG_SYNTAX;
-        }
-
-        cpu_code->code[command_info_byte] |= RAM_MASK;
-        using_RAM = true;
-    } 
+    int args_quantity = 0; 
     
     // checking label
 
@@ -239,7 +226,8 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
 
     if ((sscanf(line->str + shift, "%[a-z]%n", arg_str, &arg_length) > 0) && (cpu_code->code[command_info_byte] >= J_FIRST) && (cpu_code->code[command_info_byte] <= J_LAST))
     {
-        if (assembly_labels)
+        fprintf(stderr, "Lab name:\"%s\"\n", arg_str);
+        if (num_pass == 1)
         {
             for (int i = 0; i < labels->labels_number; ++i)
             {   
@@ -251,6 +239,8 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
 
                    *((int *) (cpu_code->code + cpu_code->current_byte)) = labels->labels_array[i].byte_number;
                     cpu_code->current_byte += sizeof(int);
+
+                    return args_quantity;
                 }
             }
 
@@ -267,7 +257,25 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
 
             *((int *) (cpu_code->code + cpu_code->current_byte)) = 0;
             cpu_code->current_byte += sizeof(labels->labels_array->byte_number);
+
+            return args_quantity;
         }
+    }
+
+    // checking RAM
+    
+    if (*(line->str + shift) == '[')
+    {
+        ++shift;                                    
+        char *back_bracket_ptr = strchr(line->str, ']');
+
+        if (back_bracket_ptr != line->str + line->len - 1) // fix вместо strlen
+        {
+            return WRONG_SYNTAX;
+        }
+        *back_bracket_ptr = '\0';
+
+        cpu_code->code[command_info_byte] |= RAM_MASK;
     }
 
     // checking arg before plus
@@ -277,13 +285,13 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
     int read_number = 0;
     if (!if_arg_read)
     {
-        if (sscanf(line->str + shift, "%d", &read_number) > 0)            
+        if (sscanf(line->str + shift, "%d%n", &read_number, &arg_length) > 0)            
         {
             if_arg_read = true;
             ++args_quantity;
 
             cpu_code->code[command_info_byte] |= IMM_CONST_MASK;
-            shift += sizeof(int);
+            shift += arg_length;
 
             *((int *) (cpu_code->code + cpu_code->current_byte)) = read_number;
             cpu_code->current_byte += sizeof(int);
@@ -294,8 +302,14 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
     
     if (!if_arg_read)
     {
-        if (sscanf(line->str + shift, "%1[a-d]x", arg_str) > 0)                 // возможно процент n?
+        if (sscanf(line->str + shift, "%1[a-d]x%n", arg_str, &arg_length) > 0)
         {
+            fprintf(stderr, "Reg name:\"%s\"\n", arg_str);
+            if(arg_length != 2)
+            {
+                return WRONG_SYNTAX;
+            }
+
             if_arg_read = true;
             ++args_quantity;
 
@@ -305,71 +319,42 @@ int GetArguments(BinaryCode *cpu_code, String *line, size_t shift, int max_args_
         }
     }
     
-    if (args_quantity == max_args_num)
+    if (args_quantity == max_args_num || (cpu_code->code[command_info_byte] & IMM_CONST_MASK) || (*(line->str + shift) != '+'))
     {
-        if ((*(line->str + shift) != '\0') && (*(line->str + shift) != ']'))
-        {
-            return WRONG_SYNTAX;
-        }
-
-        if ((*(line->str + shift) == ']') && (!using_RAM))
+        if (*(line->str + shift) != '\0')
         {
             return WRONG_SYNTAX;
         }
 
         return args_quantity;
     }
-    
-    // plus check
 
-    bool if_plus = false;
-
-    if (*(line->str + shift) == '+')
-    {
-        if_plus = true;
-        ++shift;
-    }
-    
+    shift++;
     // checking arg after plus
 
     if_arg_read = false;
     arg_length = 0;
     
-    if (sscanf(line->str + shift, "%d", &read_number) > 0)
+    if (sscanf(line->str + shift, "%d%n", &read_number, &arg_length) > 0)
     {   
-        if (!if_plus)
-        {
-            return WRONG_SYNTAX;
-        }
-
         if_arg_read = true;
         ++args_quantity;
 
         cpu_code->code[command_info_byte] |= IMM_CONST_MASK;
-        shift += sizeof(int);
+        shift += arg_length;
     
         *((int *) (cpu_code->code + cpu_code->current_byte)) = read_number;
         cpu_code->current_byte += sizeof(int);
     }
-    
-    if ((if_plus && !if_arg_read) || (!if_plus && if_arg_read))
+    else
     {
         return WRONG_SYNTAX;
     }
-    else
+    
+   if (*(line->str + shift) != '\0')
     {
-        return args_quantity;
+        return WRONG_SYNTAX;
     }
-}
 
-/*const char *ErrorDescriptions(int error_code)
-{
-    switch (error_code)
-    {
-        case UNKNOWN_LABEL:
-            return "Unknown label\n";
-        
-        case WRONG_SYNTAX:
-            return "Wrong syntax\n";       
-    }
-}*/
+    return args_quantity;
+}
