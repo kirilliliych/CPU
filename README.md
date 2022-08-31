@@ -43,11 +43,11 @@ just because this data now contains in another stack.
 This section describes all commands that are implemented in my dialect of assembly language.
 
 1. *Exit commands*
-   
    - __hlt__: exits the program. This command __must__ be at the end of any written assembler program, in other case its correct execution
               is not guaranteed, undefined behaviour might be caused.
 
 2. *Stack commands*
+
    - __push__: puts value onto the stack. Argument types:
        + push const (pushes const value)
        + push register (pushes value in register)
@@ -64,7 +64,8 @@ This section describes all commands that are implemented in my dialect of assemb
    -__dump__: dumps information about processor's current condition: registers, stack and call stack content and parameters
               and position of instruction pointer (which is a bias of currently executed command in bytecode in executable file).
    
-
+3. *Jump-type commands*
+   
 ### How can I help
 ***
 I explicitly welcome any outside contributors. Use my mail: _ilichev.kv@phystech.edu_.
