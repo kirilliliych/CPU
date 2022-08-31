@@ -48,7 +48,21 @@ This section describes all commands that are implemented in my dialect of assemb
               is not guaranteed, undefined behaviour might be caused.
 
 2. *Stack commands*
-   - __push__: puts value oto the stack. Argument types:
+   - __push__: puts value onto the stack. Argument types:
+       + push const (pushes const value)
+       + push register (pushes value in register)
+       + push [const] (pushes value from place in RAM indicated by const value)
+       + push [register] (pushes value from place in RAM indicated by value in register)
+       + push [register + const] (pushes value from place in RAM indicated by sum value in register + const value)
+
+   - __pop__: get value from stack __IMPORTANT!__ value is not copied but removed from stack. Argument types:
+       + pop  (just pops value)
+       + pop register (pops value to register)
+       + pop [register] (pops value to place in RAM indicated by value in register
+       + pop [register + const] (pops value to place in RAM indicated by sum value in register + const value)
+   
+   -__dump__: dumps information about processor's current condition: registers, stack and call stack content and parameters
+              and position of instruction pointer (which is a bias of currently executed command in bytecode in executable file).
    
 
 ### How can I help
