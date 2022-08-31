@@ -80,6 +80,9 @@ This section describes all commands that are implemented in my dialect of assemb
 4. *Jump-like commands*
    - __jmp__: updates instruction pointer with the value of its argument (goes to another place in bytecode).
    
+   __Note!__ Other instructions in this subsection take two values from stack and compare them.
+             First value is considered to be __the last__ of two that were popped by the instruction.
+   
 ### How can I help
 ***
 I explicitly welcome any outside contributors. Use my mail: _ilichev.kv@phystech.edu_.
