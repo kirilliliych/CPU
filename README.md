@@ -62,20 +62,23 @@ This section describes all commands that are implemented in my dialect of assemb
        + pop [register + const] (pops value to place in RAM indicated by sum value in register + const value)
    
    -__dump__: dumps information about processor's current condition: registers, stack and call stack content and parameters
-              and position of instruction pointer (which is a bias of currently executed command in bytecode in executable file).
+              and position of instruction pointer (ip, which is a bias of currently executed command in bytecode in executable file).
    
 3. *Arithmetic commands*
-   - __add__: takes two values from stack, adds them and puts the result onto the stack.
+   - __add__: takes two values from stack, adds them and pushes the result.
    
-   - __sub__: takes two values from stack, subtracts them and puts the result onto the stack. __IMPORTANT!__ The subtrahend should be pushed
+   - __sub__: takes two values from stack, subtracts them and pushes the result. __IMPORTANT!__ The subtrahend should be pushed
               AFTER the minuend to calculate correctly.
               
-   - __mul__: takes two values from stack, multiplies them and puts the result onto the stack.
+   - __mul__: takes two values from stack, multiplies them and pushes the result.
    
-   - __div__: takes two values from stack, divides them and puts the result onto the stack. __IMPORTANT!__ The divisor should be pushed 
+   - __div__: takes two values from stack, divides them and pushes the result. __IMPORTANT!__ The divisor should be pushed 
               AFTER the dividend to calculate correctly.
    
-   
+   - __sqrt__: takes value from stack, calculates its square root and pushes the result.
+
+4. *Jump-like commands*
+   - __jmp__: updates instruction pointer with the value of its argument (goes to another place in bytecode).
    
 ### How can I help
 ***
