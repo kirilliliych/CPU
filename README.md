@@ -68,20 +68,44 @@ This section describes all commands that are implemented in my dialect of assemb
    - __add__: takes two values from stack, adds them and pushes the result.
    
    - __sub__: takes two values from stack, subtracts them and pushes the result. __IMPORTANT!__ The subtrahend should be pushed
-              AFTER the minuend to calculate correctly.
+              __AFTER__ the minuend to calculate correctly.
               
    - __mul__: takes two values from stack, multiplies them and pushes the result.
    
    - __div__: takes two values from stack, divides them and pushes the result. __IMPORTANT!__ The divisor should be pushed 
-              AFTER the dividend to calculate correctly.
+              __AFTER__ the dividend to calculate correctly.
    
    - __sqrt__: takes value from stack, calculates its square root and pushes the result.
 
 4. *Jump-like commands*
-   - __jmp__: updates instruction pointer with the value of its argument (goes to another place in bytecode).
+   - __jmp__: updates instruction pointer with the value of its argument (goes to another place in bytecode). Argument is the name 
+              of a label.
    
    __Note!__ Other instructions in this subsection take two values from stack and compare them.
-             First value is considered to be __the last__ of two that were popped by the instruction.
+             First value is considered to be __the last__ of two that were popped by the instruction, second value is the __first__ popped,
+             respectively.
+   
+   - __jg__: jmp if first value > second value.
+   - 
+   - __jge__: jmp if first value >= second value.
+   - 
+   - __jl__: jmp if first value < second value.
+   - 
+   - __jle__: jmp if first value <= second value.
+   - 
+   - __je__: jmp if first value == second value.
+   - 
+   - __jne__: jmp if first value != second value.
+
+   - __call__: pushes address of the following instruction (return address), then executes jmp.
+
+   - __ret__: pops return address, then executes jmp to that address.
+
+5. *Input-output commands*
+   
+   - __in__: gets number from stdin and pushes it.
+   - __out__: pops number and puts it to stdout.
+   
    
 ### How can I help
 ***
