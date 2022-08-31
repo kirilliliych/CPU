@@ -1,6 +1,6 @@
 # CPU
 
-The programme is free-to-use for all kinds of developers.
+The program is free-to-use for all kinds of developers.
 ### What does the project do
 ***
 It is a processor simulation.
