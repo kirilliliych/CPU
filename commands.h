@@ -126,7 +126,7 @@ DEF_CMD(jmp, 8, 1, 1,
     IP = *((int *) (CODE + IP));
 )
 
-DEF_CMD(ja, 9, 1, 1, 
+DEF_CMD(jg, 9, 1, 1, 
 
     stack_element_t arg1 = POP;
 
@@ -141,7 +141,7 @@ DEF_CMD(ja, 9, 1, 1,
     }
 )
 
-DEF_CMD(jb, 10, 1, 1, 
+DEF_CMD(jl, 10, 1, 1, 
 
     stack_element_t arg1 = POP;
 
@@ -186,7 +186,7 @@ DEF_CMD(jne, 12, 1, 1,
     }
 )
 
-DEF_CMD(jae, 13, 1, 1, 
+DEF_CMD(jge, 13, 1, 1, 
 
     stack_element_t arg1 = POP;
 
@@ -201,7 +201,7 @@ DEF_CMD(jae, 13, 1, 1,
     }
 )
 
-DEF_CMD(jbe, 14, 1, 1, 
+DEF_CMD(jle, 14, 1, 1, 
 
     stack_element_t arg1 = POP;
 
