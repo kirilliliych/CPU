@@ -10,6 +10,8 @@ It is a processor simulation.
 Although many virtual processors have already been made, realization of your own processor is an interesting and challenging task
 that helps to realize how complicated the machine is and allows to notice some details that could not be seen without it.
 
+№
+
 ### How can I help
 ***
 I explicitly welcome any outside contributors. Use my mail: _ilichev.kv@phystech.edu_.
