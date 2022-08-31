@@ -240,7 +240,7 @@ DEF_CMD(out, 18, 0, 0,
     printf("%d\n", POP);
 )
 
-DEF_CMD(srt, 19, 0, 0,
+DEF_CMD(sqrt, 19, 0, 0,
     ++IP;
     double num = sqrt((double) POP);
     StackPush(STACK, (int) ceil(num));
