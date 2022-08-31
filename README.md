@@ -64,7 +64,18 @@ This section describes all commands that are implemented in my dialect of assemb
    -__dump__: dumps information about processor's current condition: registers, stack and call stack content and parameters
               and position of instruction pointer (which is a bias of currently executed command in bytecode in executable file).
    
-3. *Jump-type commands*
+3. *Arithmetic commands*
+   - __add__: takes two values from stack, adds them and puts the result onto the stack.
+   
+   - __sub__: takes two values from stack, subtracts them and puts the result onto the stack. __IMPORTANT!__ The subtrahend should be pushed
+              AFTER the minuend to calculate correctly.
+              
+   - __mul__: takes two values from stack, multiplies them and puts the result onto the stack.
+   
+   - __div__: takes two values from stack, divides them and puts the result onto the stack. __IMPORTANT!__ The divisor should be pushed 
+              AFTER the dividend to calculate correctly.
+   
+   
    
 ### How can I help
 ***
