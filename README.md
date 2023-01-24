@@ -1,18 +1,17 @@
 # CPU
 
 The program is free-to-use for all kinds of developers.
-### What does the project do
 ***
+## What does the project do
 It is a processor simulation.
 
-### Why is the project useful
 ***
+## Why is the project useful
 Although many virtual processors have already been made, realization of your own processor is an interesting and challenging task
 that helps to realize how complicated the machine is and allows to notice some details that could not be seen without it.
 
-
-### Structure
 ***
+## Structure
 This program consists of three main parts:
 
 1. __Assembler__: it reads lines of code written in a source file, analyses code according to rules of my assembly language dialect
@@ -23,9 +22,8 @@ and if there are no mistakes transfers assembly code into bytecode in executable
 3. __Disassembler__: if executable file was created according to rules of my assembly language dialect, then disassembler reads commands
 from executable and creates text file with commands which can be then transferred to executable via assembler.
 
-
-### Brief architecture
 ***
+## Brief architecture
 This processor implementation includes (separately):
 
 1. __four registers__: ax, bx, cx and dx
@@ -38,8 +36,8 @@ architecture are separated. In real life it is more expensive and much less comm
 advantage is that the processor becomes more reliable: e.g., it is now impossible to spoil the return address by data stored in stack
 just because this data now contains in another stack.
 
-### Commands
 ***
+## Commands
 This section describes all commands that are implemented in my dialect of assembly language.
 
 1. *Exit commands*
@@ -106,15 +104,14 @@ This section describes all commands that are implemented in my dialect of assemb
    - __in__: gets number from stdin and pushes it.
    - __out__: pops number and puts it to stdout.
    
-   
-### How can I help
-***
+*** 
+## How can I help
 I explicitly welcome any outside contributors. Use my mail: _ilichev.kv@phystech.edu_.
 
 __A strong request__:
 * Do not break the codestyle
 * Do not destroy previous functionality with additions
 
-### Where to ask questions
 ***
+## Where to ask questions
 Use the mail mentioned earlier.
