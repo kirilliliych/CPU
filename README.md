@@ -3,12 +3,13 @@
 The program is free-to-use for all kinds of developers.
 ***
 ## What does the project do
-It is a processor simulation.
+It is a program that simulates processor work.
 
 ***
 ## Why is the project useful
-Although many emulations of processors have already been made, realization of your own processor is an interesting and challenging task
-that helps to realize how complicated the machine is and allows to notice some details that could not be seen without it.
+Although many simulations of processors have already been made, realization of your own processor is an interesting and challenging task
+that helps to realize how complicated the machine is, discover some hidden details that might not be seen during the first view and receive
+some experience connected with designing the architecture.
 
 ***
 ## Structure
