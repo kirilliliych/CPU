@@ -41,11 +41,11 @@ just because this data now contains in another stack.
 ## Commands
 This section describes all commands that are implemented in my dialect of assembly language.
 
-1. *Exit commands*
+1. _Exit commands_
    - __hlt__: exits the program. This command __must__ be at the end of any written assembler program, in other case its correct execution
               is not guaranteed, undefined behaviour might be caused.
 
-2. *Stack commands*
+2. _Stack commands_
 
    - __push__: puts value onto the stack. Argument types:
        + push const (pushes const value)
@@ -63,7 +63,7 @@ This section describes all commands that are implemented in my dialect of assemb
    -__dump__: dumps information about processor's current condition: registers, stack and call stack content and parameters
               and position of instruction pointer (ip, which is a bias of currently executed command in bytecode in executable file).
    
-3. *Arithmetic commands*
+3. _Arithmetic commands_
    - __add__: takes two values from stack, adds them and pushes the result.
    
    - __sub__: takes two values from stack, subtracts them and pushes the result. __IMPORTANT!__ The subtrahend should be pushed
@@ -76,7 +76,7 @@ This section describes all commands that are implemented in my dialect of assemb
    
    - __sqrt__: takes value from stack, calculates its square root and pushes the result.
 
-4. *Jump-like commands*
+4. _Jump-like commands_
    - __jmp__: updates instruction pointer with the value of its argument (goes to another place in bytecode). Argument is the name 
               of a label.
    
@@ -100,7 +100,7 @@ This section describes all commands that are implemented in my dialect of assemb
 
    - __ret__: pops return address, then executes jmp to that address.
 
-5. *Input-output commands*
+5. _Input-output commands_
    
    - __in__: gets number from stdin and pushes it.
    - __out__: pops number and puts it to stdout.
@@ -110,8 +110,8 @@ This section describes all commands that are implemented in my dialect of assemb
 I explicitly welcome any outside contributors. Use my mail: _ilichev.kv@phystech.edu_.
 
 __A strong request__:
-* Do not break the codestyle
-* Do not destroy previous functionality with additions
+- Do not break the codestyle
+- Do not destroy previous functionality with additions
 
 ***
 ## Where to ask questions
