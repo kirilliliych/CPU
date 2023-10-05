@@ -35,7 +35,7 @@ This processor implementation includes (separately):
 As we can see, this implementation answers the convention of *the Harvard architecture*, which means that different parts of the processor
 architecture are separated. In real life it is more expensive and much less common than the *von Neumann architecture*, but its main
 advantage is that the processor becomes more reliable: e.g., it is now impossible to spoil the return address by data stored in stack
-just because this data now contains in another stack.
+just because this data now is being contained in another stack.
 
 ***
 ## Commands
